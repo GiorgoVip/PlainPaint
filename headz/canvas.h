@@ -54,5 +54,9 @@ void FillCanvas(Canvas* self)
 void PaintCanvas(Canvas* self, Uint32 x, Uint32 y, SDL_Color c)
 {
 	*((Uint32*)self->surface->pixels + (x + (y*self->surface->w))) = 0xffffffff;//SDL_MapRGBA(self->surface->format, c.r, c.g, c.b, c.a);
+	*((Uint32*)self->surface->pixels + (x+1 + (y*self->surface->w))) = 0xffffffff;
+	*((Uint32*)self->surface->pixels + (x-1 + (y*self->surface->w))) = 0xffffffff;
+	*((Uint32*)self->surface->pixels + (x + ((y+1)*self->surface->w))) = 0xffffffff;
+	*((Uint32*)self->surface->pixels + (x + ((y-1)*self->surface->w))) = 0xffffffff;
 	SDL_UpdateWindowSurface(self->window);
 }

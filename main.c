@@ -11,7 +11,7 @@ struct
 	Uint8 run : 1;
 } appStatus;
 
-int cancer(void)
+int main(void)
 {
 	//SDL_Log(MI"Set the sails!\n");
 	
@@ -34,7 +34,7 @@ int cancer(void)
 	
 	//SDL_ShowSimpleMessageBox(0, "Kek", "Messagez", canvas->window);
 	//FillCanvas(canvas);
-
+int mx, my;
 	while(appStatus.run)
 	{
 		while(SDL_PollEvent(&event))
@@ -47,7 +47,7 @@ int cancer(void)
 					appStatus.run = 0;
 					break;
 				}
-				case SDL_MOUSEBUTTONDOWN:
+				/*case SDL_MOUSEBUTTONDOWN:
 				{
 					SDL_Log("Event Mouse Down rx: %i; ry: %i; s: %i;", event.button.x, event.button.y);
 					PaintCanvas(canvas, event.button.x, event.button.y, (SDL_Color){255, 255, 255, 255});
@@ -56,11 +56,14 @@ int cancer(void)
 				case SDL_MOUSEMOTION:
 				{
 					SDL_Log("Event Mouse Motion rx: %i; ry: %i; s: %i; w: %i;", event.motion.x, event.motion.y, event.motion.state, canvas->surface->w);
-					PaintCanvas(canvas, event.motion.x, event.motion.y, (SDL_Color){255, 255, 255, 255});
+					if(event.motion.state) PaintCanvas(canvas, event.motion.x, event.motion.y, (SDL_Color){255, 255, 255, 255});
 					break;
-				}
+				}*/
 			}
 		}
+		SDL_PumpEvents();
+		if(SDL_GetMouseState(&mx, &my) & SDL_BUTTON(SDL_BUTTON_LEFT))
+			PaintCanvas(canvas, mx, my, (SDL_Color){255, 255, 255, 255});
 	}
 	//SDL_SetRenderDrawColor(ren, 255, 255, 0, 255);
 	//SDL_RenderClear(ren);
@@ -76,7 +79,7 @@ int cancer(void)
 }
 
 // SDL2 downgrade and grab a few versions for windows etc
-int main(int argc, char* argv[])
+int testmain(int argc, char* argv[])
 {
     SDL_Surface *screen; // even with SDL2, we can still bring ancient code back
     SDL_Window *window;
