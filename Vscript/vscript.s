@@ -25,3 +25,11 @@ pop rdi
 mov [rax-1], byte '!'
 sub rax, rdi
 ret
+
+
+
+global _inter
+
+_inter:
+
+	

@@ -2,9 +2,9 @@
 
 // # BASICS # //
 
-#define extends :
-#define constructor ;
-#define class ;
+#define all ( ~0 )
+#define off (  0 )
+#define onn (  1 )
 
 #define ME "[!] ERROR: "
 #define MI "[#] INI: "
