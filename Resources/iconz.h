@@ -1,4 +1,4 @@
-
+#include "./font.h"
 
 // # Executable Internal Graphics # //
 
@@ -14,17 +14,18 @@
 
 ///	Unused, 'Icons' will be loaded from the provided 'Icons Bundle' via 'SDL_LoadBMP'
 
-/**Uint32* _UnpackIconGraphics(SDL_PixelFormat* format, Uint16 scale, Uint16 amount)
+/**static SDL_Surface* SliceIcons(DynamicArray* list, SDL_Surface* surface, SDL_Rect slice)
 {
-	scale = scale * scale;
 	
-	for(Uint16 ci = 0; ci != amount; ++ci)
-	for(Uint32 cc = 0; cc != scale; ++cc)	
+	
+	
+	
+	
 }*/
 
 ///typedef struct {	char* names; GUIIcon* icons;	} GUIIconList;
 
-DynamicArray* _UnpackIcons(SDL_PixelFormat* format, char* names, Uint8 reserve)		/// Does NOT check wether there actual names!!! '%' = end of names	ONLY USE ONE NUL TERMINATOR PER NAME
+DynamicArray* LoadIcons(SDL_PixelFormat* format, char* names)			/// Does NOT check wether there actual names!!! '%' = end of names	ONLY USE ONE NUL TERMINATOR PER NAME
 {
 	SDL_Surface* surface;
 	DynamicArray* icons = CreateDynamicArray(0, sizeof(SDL_Surface*));///sizeof(GUIIcon));
@@ -50,7 +51,7 @@ DynamicArray* _UnpackIcons(SDL_PixelFormat* format, char* names, Uint8 reserve)	
 	
 	
 
-void _DestroyIcons(DynamicArray* icons)
+void DestroyIcons(DynamicArray* icons)
 {
 	for(Uint8 c = 0; c != icons->amount; ++c)
 		SDL_FreeSurface(((SDL_Surface**)icons->data)[c]);

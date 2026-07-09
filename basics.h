@@ -10,7 +10,7 @@
 #define MI "[#] INI: "
 #define MR "[#] REN: "
 
+typedef Uint32* Pixels;
+
 extern Uint8 chopTest(char*);
-
-
 

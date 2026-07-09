@@ -1,4 +1,4 @@
-#include "./GUI.h"
+///#include "./GUI.h"
 // # Module Template # //
 typedef struct
 {
@@ -61,7 +61,7 @@ void Placey(Bar* self, Uint32 x, Uint32 y, SDL_Surface* sur, Uint32 scale)
 
 void UpdateBar(Bar* self)
 {
-	UpdateGUI(self->gui);
+	///UpdateGUI(self->gui);
 	
 	SDL_UpdateWindowSurface(self->window);
 }

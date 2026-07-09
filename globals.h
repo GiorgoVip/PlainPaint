@@ -10,3 +10,7 @@ struct
 	///
 } appStatus;
 
+Uint8 barFocus = 0;															// Time shortage issues
+
+SDL_Color CanvasBackgroundColor = (SDL_Color){255, 255, 255, 255};
+

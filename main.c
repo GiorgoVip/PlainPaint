@@ -1,14 +1,14 @@
 #include "./basics.h"
-
 #include "./globals.h"
 
-#include "./headz/Window.h"
+
+#include "./headz/extra.h"
+#include "./headz/equipment.h"
+
 #include "./headz/Canvas.h"
+#include "./headz/GUI.h"
 #include "./headz/Bar.h"
 
-#include "./headz/3rd/XiaoLine.h"
-
-#include "./Resources/internal.h"
 
 int main(void)
 {
@@ -30,15 +30,23 @@ int main(void)
 	
 	Bar* bar = CreateBar(250, 650);				/// Create the bar
 	
-	DynamicArray* s = _UnpackIcons(bar->surface->format, "/Users/bobkins/Documents/raboti/Stuffings/PlainPaint/tet.bmp\0%", 10);
+	DynamicArray* s = LoadIcons(bar->surface->format, "/Users/bobkins/Documents/raboti/Stuffings/PlainPaint/tet.bmp\0%");
 	
 				PlaceGUI(bar->gui, ""
 			
 			"___ Hello world ___"
-			"[ click me ]"
-			"-> normalBrush ;"
+			"/SAVE<>LOAD\\"
+			"[SAVE WORK]"
+			"-< 0;"
+			"[LOAD WORK]"
+			"-< 1;"
+			"-V;"
+			"[TEST_ERASER]"
+			"->1;"
+			"-V  0  ;"
+			"/BRUSHES\\"
 			
-			);
+			);	PlaceEquipmentButtons(bar->gui);
 	
 	appStatus.run = canvas->status.init && bar->status.init;
 	
@@ -46,12 +54,14 @@ int main(void)
 	// # LOCAL APP VARIABLES # //
 	
 	int mx, my;									/// Current Mouse Postions
+	int pmx = 0, pmy = 0;								/// Previous Mouse Positions
 	
+	Uint8 drawing = 0;
 	
 	// # APP PRE-RENDERING # //
 	
-	FillCanvas(canvas, (SDL_Color){255, 255, 255, 255});
-	
+	FillCanvas(canvas, CanvasBackgroundColor);
+	FillGUI(bar->gui, (SDL_Color){0, 0, 0, 255}); UpdateElementsGUI(bar->gui, bar->gui->root, 0); SDL_UpdateWindowSurface(bar->window);
 	
 	// # APP UPDATE ROUTINE # //
 
@@ -67,29 +77,53 @@ int main(void)
 					appStatus.run = 0;
 					break;
 				}
+				
+				case SDL_WINDOWEVENT:									// Time Shortage ISSues
+				{
+					if(event.window.event == SDL_WINDOWEVENT_ENTER)
+						barFocus = (SDL_GetWindowID(bar->window) == event.window.windowID);/// SDL_Log("%i", barFocus);
+					break;
+				}
 			}
 		}
 		
 		SDL_PumpEvents();
-		if(SDL_GetMouseState(&mx, &my) & SDL_BUTTON(SDL_BUTTON_LEFT))
-			PaintCanvas(canvas, mx, my, (SDL_Color){255, 255, 255, 255}),
-			LineCanvas(canvas, 400, 325, mx, my, (SDL_Color){255, 255, 255, 90});
-		SDL_Surface* ptr = *(SDL_Surface**)s->data;
+	
+		/// # CANVAS # ///
+		
+		if(SDL_GetMouseState(&mx, &my) & SDL_BUTTON(SDL_BUTTON_LEFT))	/// PaintCanvas(canvas, mx, my, (SDL_Color){255, 255, 0, 255});
+		{
+			if(pmx && pmy) LineCircleCanvas(canvas, pmx, pmy, mx, my, CurrentEquipment->size, CurrentEquipment->color);///LineCanvas(canvas, pmx, pmy, mx, my, (SDL_Color){255, 255, 255, 90});
+			pmx = mx;
+			pmy = my;
+		}
+		else
+		{
+			pmx = 0;
+			pmy = 0;
+		}
+			
+		/// # BAR # ///
+		
+		///SDL_Surface* ptr = *(SDL_Surface**)s->data;
+		
+		UpdateGUI(bar->gui, canvas);
 
-			 Placey(bar, 0, 0, ptr, 10);
-		 SDL_UpdateWindowSurface(bar->window);
+			 
+		SDL_UpdateWindowSurface(canvas->window);
+		SDL_UpdateWindowSurface(bar->window);
 	}
-	//SDL_SetRenderDrawColor(ren, 255, 255, 0, 255);
-	//SDL_RenderClear(ren);
-	//
-	//SDL_RenderPresent(ren);
-	//SDL_Delay(3000);
+	///SDL_SetRenderDrawColor(ren, 255, 255, 0, 255);
+	///SDL_RenderClear(ren);
+	///
+	///SDL_RenderPresent(ren);
+	///SDL_Delay(3000);
 
-_DestroyIcons(s);
+	DestroyIcons(s);	CleanGUIContainer(bar->gui->root);
 	DestroyBar(bar);
 	DestroyCanvas(canvas);
 	SDL_Quit();
 	return 0;
 }
 
-// SDL2 downgrade and grab a few versions for windows etc
+/// SDL2 downgrade and grab a few versions for windows etc

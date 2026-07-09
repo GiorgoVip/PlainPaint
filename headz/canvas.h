@@ -1,5 +1,5 @@
-#include "../basics.h"
-#include "./extra.h"
+///#include "./extra.h"
+
 typedef struct	// # Module Template # //
 {
 	// # Properties # //
@@ -42,7 +42,9 @@ void DestroyCanvas(Canvas* self)
 // # Canvas Rendering Methods # //
 void FillCanvas(Canvas* self, SDL_Color c)
 {	
-	SDL_PixelFormat* format = self->surface->format; Uint32 p = SDL_MapRGBA(format, 255, 0, 255, 255);
+	EquipmentList[1].color = c;
+	
+	SDL_PixelFormat* format = self->surface->format; Uint32 p = SDL_MapRGBA(format, c.r, c.g, c.b, 255);
 	/**for(int y = 0; y <= self->surface->h; ++y)
 		for(int x = 0; x <= self->surface->w; ++x)
 		{
@@ -53,6 +55,21 @@ void FillCanvas(Canvas* self, SDL_Color c)
 	for(int i = 0; i <= self->surface->h * self->surface->w; ++i) *((Uint32*)self->surface->pixels + (i)) = p;
 
 	SDL_UpdateWindowSurface(self->window);
+}
+
+void PutCircleCanvas(Canvas* self, Uint32 x, Uint32 y, Uint32 r, SDL_Color c)
+{
+	Uint32 px = SDL_MapRGB(self->surface->format, c.r, c.g, c.b);
+	
+	double rr = ((double)r / 2) - 0.5;
+	
+	for(Uint32 cy = 0; cy != r; ++cy)
+		for(Uint32 cx = 0; cx != r; ++cx)
+		{
+			///*((Uint32*)self->surface->pixels + (x + cx + ((y + cy)*self->surface->w))) = 0x000000;
+			
+			if( PytoLength(cx, cy, rr, rr) <= rr ) *((Uint32*)self->surface->pixels + (x + cx + ((y + cy)*self->surface->w))) = px;
+		}
 }
 
 void PaintCanvas(Canvas* self, Uint32 x, Uint32 y, SDL_Color c)
@@ -116,6 +133,51 @@ void LineCanvas(Canvas* self, Uint32 bx, Uint32 by, Uint32 ex, Uint32 ey, SDL_Co
 	SDL_UpdateWindowSurface(self->surface);
 }
 
+
+void PutTCircleCanvas(Canvas* self, Uint32 x, Uint32 y, Uint32 r, SDL_Color c)
+{
+	///Uint32 px = SDL_MapRGB(self->surface->format, c.r, c.g, c.b);
+	
+	double rr = ((double)r / 2) - 0.5;
+	
+	for(Uint32 cy = 0; cy != r; ++cy)
+		for(Uint32 cx = 0; cx != r; ++cx)
+		{
+			///*((Uint32*)self->surface->pixels + (x + cx + ((y + cy)*self->surface->w))) = 0x000000;
+			
+			if( PytoLength(cx, cy, rr, rr) <= rr ) PutTPixelCanvas(self, x + cx, y + cy, c);
+		}
+}
+
+void LineCircleCanvas(Canvas* self, Uint32 bx, Uint32 by, Uint32 ex, Uint32 ey, Uint32 r, SDL_Color c)
+{
+	Sint32 x = ex - bx;
+	Sint32 y = ey - by;
+	
+	
+	if(SDL_abs(x) > SDL_abs(y))
+	{
+		float ys = (float)y / (float)x;
+		
+		for(Sint32 s = 0;  s != x  && 1; s += GetSignNumber(x))
+			PutTCircleCanvas(self, bx + s, by + s * ys, r, c);
+	}
+	else // 0 or y > x
+	{
+		float xs = (float)x / (float)y;
+		
+		for(Sint32 s = 0; s != y && 1; s += GetSignNumber(y))
+			PutTCircleCanvas(self, bx + s * xs, by + s, r, c);
+	}
+	
+	/**for(Sint32 s = bx; s != ex; s += sgn(x))
+		PutPixelCanvas(self, s, ey, c);
+	for(Sint32 s = ey; s != by; s -= sgn(y))
+		PutPixelCanvas(self, ex, s, c);*/
+	
+	SDL_UpdateWindowSurface(self->surface);
+}
+
 void BlorbCanvas(Canvas* self, Uint32 x, Uint32 y, Uint32 w, Uint32 h)
 {
 	for(Uint32 xc = x; xc != x+w; ++xc)
@@ -125,4 +187,23 @@ void BlorbCanvas(Canvas* self, Uint32 x, Uint32 y, Uint32 w, Uint32 h)
 			
 	SDL_UpdateWindowSurface(self->surface);
 }
+
+void SaveCanvas(Canvas* self)
+{
+	SDL_Log("Saving drawing as bmp file \"canvas.bmp\"\"");
+	
+	SDL_SaveBMP(self->surface, "canvas.bmp");
+}
+
+void LoadCanvas(Canvas* self)
+{
+	SDL_Log("Loading drawing from bmp file \"canvas.bmp\"\"");
+	
+	SDL_Surface* sur = SDL_ConvertSurface(SDL_LoadBMP("./canvas.bmp"), self->surface->format, 0);
+	for(Uint32 c = 0; c != self->surface->w * self->surface->h; ++c)
+	{
+		*((Uint32*)self->surface->pixels + (c)) = *((Uint32*)sur->pixels + (c));
+	}		
+}
+
 
